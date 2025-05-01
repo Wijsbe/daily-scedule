@@ -1,0 +1,171 @@
+.sport-schema-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sport-schema-container {
+  background-color: var(--card-color);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+  position: relative;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.sluit-knop {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.sluit-knop:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.sport-schema-container h2 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.schema-beschrijving {
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-color-light);
+  font-size: 1rem;
+}
+
+.oefeningen-lijst {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.oefening-header {
+  display: flex;
+  background-color: var(--primary-color);
+  color: white;
+  padding: var(--spacing-md);
+  font-weight: 600;
+}
+
+.oefening-naam-header {
+  flex: 1;
+}
+
+.oefening-details-header {
+  flex: 2;
+}
+
+.oefening-item {
+  display: flex;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.oefening-item:last-child {
+  border-bottom: none;
+}
+
+.oefening-item:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.oefening-naam {
+  flex: 1;
+  font-weight: 600;
+  padding-right: var(--spacing-md);
+}
+
+.oefening-details {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.rust-tijd {
+  font-size: 0.9rem;
+  color: var(--text-color-light);
+  margin-top: var(--spacing-xs);
+}
+
+.oefening-opmerking {
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-top: var(--spacing-xs);
+  color: var(--text-color-light);
+}
+
+/* Responsive styling */
+@media (max-width: 480px) {
+  .sport-schema-container {
+    padding: var(--spacing-md);
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .sport-schema-overlay {
+    align-items: flex-start;
+  }
+
+  .oefening-item {
+    flex-direction: column;
+  }
+
+  .oefening-naam {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .oefening-header {
+    display: none;
+  }
+}

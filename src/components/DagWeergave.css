@@ -1,0 +1,205 @@
+.dag-weergave {
+  background-color: var(--card-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: var(--spacing-lg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+}
+
+.dag-weergave h2 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  text-transform: capitalize;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.dienst-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  margin-bottom: var(--spacing-lg);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dienst-badge[data-dienst="Ochtend"] {
+  background-color: #ffb74d;
+  color: #7f4f24;
+}
+
+.dienst-badge[data-dienst="Middag"] {
+  background-color: #4db6ac;
+  color: #004d40;
+}
+
+.dienst-badge[data-dienst="Nacht"] {
+  background-color: #7986cb;
+  color: #1a237e;
+}
+
+.dienst-badge[data-dienst="Vrij"] {
+  background-color: #aed581;
+  color: #33691e;
+}
+
+.activiteiten-lijst {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  flex: 1;
+  overflow-y: auto;
+  padding-right: var(--spacing-xs);
+}
+
+.activiteiten-lijst::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activiteiten-lijst::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.activiteiten-lijst::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.activiteit-item {
+  display: flex;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  border-left: 4px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: var(--transition);
+}
+
+.activiteit-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.activiteit-item.werk {
+  background-color: #e3f2fd;
+  border-left-color: #2196f3;
+}
+
+.activiteit-item.slaap {
+  background-color: #e8eaf6;
+  border-left-color: #3f51b5;
+}
+
+.activiteit-item.sport {
+  background-color: #f9fbe7;
+  border-left-color: #cddc39;
+}
+
+.activiteit-item.hobby\/studie {
+  background-color: #e0f7fa;
+  border-left-color: #00bcd4;
+}
+
+.activiteit-item.gezinstijd {
+  background-color: #f3e5f5;
+  border-left-color: #9c27b0;
+}
+
+.activiteit-tijd {
+  min-width: 120px;
+  font-weight: 600;
+  font-family: 'Inter', monospace;
+  font-size: 0.9rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--spacing-md);
+}
+
+.activiteit-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.activiteit-info strong {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+}
+
+.sport-type {
+  margin-top: var(--spacing-xs);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #666;
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 2px var(--spacing-sm);
+  border-radius: 12px;
+}
+
+.sport-type.clickable {
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.sport-type.clickable:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.geen-planning {
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-xl);
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: var(--border-radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border: 1px dashed #ccc;
+}
+
+@media (max-width: 768px) {
+  .activiteit-item {
+    flex-direction: column;
+  }
+
+  .activiteit-tijd {
+    margin-right: 0;
+    margin-bottom: var(--spacing-sm);
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .activiteit-info {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .dag-weergave {
+    padding: var(--spacing-md);
+  }
+
+  .activiteiten-lijst {
+    gap: var(--spacing-sm);
+  }
+}
