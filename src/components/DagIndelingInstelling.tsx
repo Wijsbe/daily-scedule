@@ -48,11 +48,13 @@ const DagIndelingInstelling: React.FC<DagIndelingInstellingProps> = ({
     const nieuweActiviteiten = [...activiteiten];
 
     if (veld === 'type') {
+      // Controleer of de waarde een geldige activiteittype is
+      const activiteitType = waarde as 'Werk' | 'Slaap' | 'Sport' | 'Hobby/Studie' | 'Gezinstijd';
       nieuweActiviteiten[index] = {
         ...nieuweActiviteiten[index],
-        [veld]: waarde,
+        type: activiteitType,
         // Verwijder sportType als het type niet Sport is
-        ...(waarde !== 'Sport' && { sportType: undefined })
+        ...(activiteitType !== 'Sport' && { sportType: undefined })
       };
     } else if (veld === 'sportType') {
       nieuweActiviteiten[index] = {

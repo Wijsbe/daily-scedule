@@ -26,46 +26,51 @@ const dienstAfkortingen: Record<DienstType, string> = {
   'Vrij': 'V',
 };
 
-const Kalender: React.FC<KalenderProps> = ({ 
-  dienstDagen, 
-  updateDienst, 
-  geselecteerdeDatum, 
-  setGeselecteerdeDatum 
+const Kalender: React.FC<KalenderProps> = ({
+  dienstDagen,
+  updateDienst,
+  geselecteerdeDatum,
+  setGeselecteerdeDatum
 }) => {
   const getDienstVoorDatum = (datum: Date): DienstType | null => {
-    const gevondenDag = dienstDagen.find(dag => 
-      dag.datum.getDate() === datum.getDate() && 
-      dag.datum.getMonth() === datum.getMonth() && 
+    const gevondenDag = dienstDagen.find(dag =>
+      dag.datum.getDate() === datum.getDate() &&
+      dag.datum.getMonth() === datum.getMonth() &&
       dag.datum.getFullYear() === datum.getFullYear()
     );
-    
+
     return gevondenDag ? gevondenDag.dienst : null;
   };
 
   const handleDagKlik = (datum: Date) => {
     setGeselecteerdeDatum(datum);
-    
+
     // Toggle door diensten bij klik
     const huidigeDienst = getDienstVoorDatum(datum);
-    const volgendeStap: Record<DienstType | null, DienstType> = {
-      null: 'Ochtend',
-      'Ochtend': 'Middag',
-      'Middag': 'Nacht',
-      'Nacht': 'Vrij',
-      'Vrij': 'Ochtend'
-    };
-    
-    updateDienst(datum, volgendeStap[huidigeDienst]);
+
+    let volgendeDienst: DienstType = 'Ochtend';
+
+    if (huidigeDienst === 'Ochtend') {
+      volgendeDienst = 'Middag';
+    } else if (huidigeDienst === 'Middag') {
+      volgendeDienst = 'Nacht';
+    } else if (huidigeDienst === 'Nacht') {
+      volgendeDienst = 'Vrij';
+    } else if (huidigeDienst === 'Vrij') {
+      volgendeDienst = 'Ochtend';
+    }
+
+    updateDienst(datum, volgendeDienst);
   };
 
   const tileContent = ({ date, view }: { date: Date, view: string }) => {
     if (view !== 'month') return null;
-    
+
     const dienst = getDienstVoorDatum(date);
     if (!dienst) return null;
-    
+
     return (
-      <div 
+      <div
         className="dienst-indicator"
         style={{ backgroundColor: dienstKleuren[dienst] }}
       >
@@ -76,13 +81,17 @@ const Kalender: React.FC<KalenderProps> = ({
 
   return (
     <div className="kalender-container">
-      <Calendar 
-        onChange={handleDagKlik}
+      <Calendar
+        onChange={(value: any) => {
+          if (value instanceof Date) {
+            handleDagKlik(value);
+          }
+        }}
         value={geselecteerdeDatum}
-        locale={nl}
+        locale="nl"
         tileContent={tileContent}
-        formatDay={(locale, date) => format(date, 'd', { locale: nl })}
-        formatMonthYear={(locale, date) => 
+        formatDay={(_, date) => format(date, 'd', { locale: nl })}
+        formatMonthYear={(_, date) =>
           format(date, 'MMMM yyyy', { locale: nl })
         }
         next2Label={null}

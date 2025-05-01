@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  base: '/daily-scedule/',
   plugins: [
     react(),
     VitePWA({
@@ -27,7 +28,7 @@ export default defineConfig({
         ],
         lang: 'nl',
         display: 'standalone',
-        start_url: '/'
+        start_url: '/daily-scedule/'
       }
     })
   ]
