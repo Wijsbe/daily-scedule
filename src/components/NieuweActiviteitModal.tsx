@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { DagActiviteit, SportType, ActiviteitType } from '../types';
+import React, { useState, useEffect } from 'react';
+import { DagActiviteit, SportType, ActiviteitType, HerhaalOptie } from '../types';
+import { getAlleActiviteitTypes, voegActiviteitTypeToe, verwijderActiviteitType } from '../utils/schemaUtils';
 import './NieuweActiviteitModal.css';
 
 interface NieuweActiviteitModalProps {
-  toevoegen: (activiteit: DagActiviteit, maakPreset: boolean) => void;
+  toevoegen: (activiteit: DagActiviteit, herhaalOptie: HerhaalOptie) => void;
   annuleren: () => void;
   geselecteerdeDienst?: string;
 }
@@ -17,24 +18,65 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
   const [eindTijd, setEindTijd] = useState<string>('09:00');
   const [type, setType] = useState<ActiviteitType>('Werk');
   const [sportType, setSportType] = useState<SportType>('Push');
-  const [customType, setCustomType] = useState<string>('');
-  const [useCustomType, setUseCustomType] = useState<boolean>(false);
-  const [maakPreset, setMaakPreset] = useState<boolean>(false);
+  const [nieuwType, setNieuwType] = useState<string>('');
+  const [activiteitTypes, setActiviteitTypes] = useState<ActiviteitType[]>([]);
+  const [actie, setActie] = useState<'kies' | 'toevoegen' | 'verwijderen'>('kies');
+  const [herhaalOptieType, setHerhaalOptieType] = useState<HerhaalOptie['type']>('Geen');
+  const [herhaalOptieWaarde, setHerhaalOptieWaarde] = useState<string>('');
+
+  // Laad alle activiteitstypen bij het openen van de modal
+  useEffect(() => {
+    setActiviteitTypes(getAlleActiviteitTypes());
+  }, []);
+
+  // Voeg een nieuw activiteitstype toe
+  const handleTypeToevoegen = () => {
+    if (nieuwType.trim() !== '') {
+      voegActiviteitTypeToe(nieuwType);
+      setActiviteitTypes(getAlleActiviteitTypes());
+      setNieuwType('');
+      setActie('kies');
+      setType(nieuwType); // Selecteer het nieuwe type automatisch
+    }
+  };
+
+  // Verwijder een activiteitstype
+  const handleTypeVerwijderen = () => {
+    if (type && type !== 'Werk' && type !== 'Slaap' && type !== 'Sport' && type !== 'Hobby/Studie' && type !== 'Gezinstijd') {
+      verwijderActiviteitType(type as string);
+      setActiviteitTypes(getAlleActiviteitTypes());
+      setType('Werk'); // Reset naar een standaard type
+      setActie('kies');
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const effectieveType = useCustomType ? customType : type;
+    // Als we bezig zijn met toevoegen of verwijderen van een type, doe dat eerst
+    if (actie === 'toevoegen') {
+      handleTypeToevoegen();
+      return;
+    } else if (actie === 'verwijderen') {
+      handleTypeVerwijderen();
+      return;
+    }
 
+    // Maak de nieuwe activiteit
     const nieuweActiviteit: DagActiviteit = {
       startTijd,
       eindTijd,
-      type: effectieveType,
-      ...(type === 'Sport' && { sportType }),
-      ...(useCustomType && { isCustomType: true })
+      type,
+      ...(type === 'Sport' && { sportType })
     };
 
-    toevoegen(nieuweActiviteit, maakPreset);
+    // Maak de herhaaloptie
+    const herhaalOptie: HerhaalOptie = {
+      type: herhaalOptieType,
+      waarde: herhaalOptieWaarde
+    };
+
+    toevoegen(nieuweActiviteit, herhaalOptie);
   };
 
   return (
@@ -75,25 +117,34 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
                   <input
                     type="radio"
                     name="type-selector"
-                    checked={!useCustomType}
-                    onChange={() => setUseCustomType(false)}
+                    checked={actie === 'kies'}
+                    onChange={() => setActie('kies')}
                   />
-                  Standaard type
+                  Kies type
                 </label>
                 <label>
                   <input
                     type="radio"
                     name="type-selector"
-                    checked={useCustomType}
-                    onChange={() => setUseCustomType(true)}
+                    checked={actie === 'toevoegen'}
+                    onChange={() => setActie('toevoegen')}
                   />
-                  Aangepast type
+                  Type toevoegen
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="type-selector"
+                    checked={actie === 'verwijderen'}
+                    onChange={() => setActie('verwijderen')}
+                  />
+                  Type verwijderen
                 </label>
               </div>
             </div>
           </div>
 
-          {!useCustomType ? (
+          {actie === 'kies' && (
             <div className="form-group">
               <label htmlFor="activiteit-type">Kies type:</label>
               <select
@@ -102,28 +153,73 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
                 onChange={(e) => setType(e.target.value as ActiviteitType)}
                 required
               >
-                <option value="Werk">Werk</option>
-                <option value="Slaap">Slaap</option>
-                <option value="Sport">Sport</option>
-                <option value="Hobby/Studie">Hobby/Studie</option>
-                <option value="Gezinstijd">Gezinstijd</option>
+                {activiteitTypes.map((activiteitType) => (
+                  <option key={activiteitType} value={activiteitType}>
+                    {activiteitType}
+                  </option>
+                ))}
               </select>
-            </div>
-          ) : (
-            <div className="form-group">
-              <label htmlFor="custom-type">Aangepast type:</label>
-              <input
-                type="text"
-                id="custom-type"
-                value={customType}
-                onChange={(e) => setCustomType(e.target.value)}
-                placeholder="Bijv. Meditatie, Koken, etc."
-                required={useCustomType}
-              />
             </div>
           )}
 
-          {type === 'Sport' && !useCustomType && (
+          {actie === 'toevoegen' && (
+            <div className="form-group">
+              <label htmlFor="nieuw-type">Nieuw type:</label>
+              <div className="input-with-button">
+                <input
+                  type="text"
+                  id="nieuw-type"
+                  value={nieuwType}
+                  onChange={(e) => setNieuwType(e.target.value)}
+                  placeholder="Bijv. Meditatie, Koken, etc."
+                  required={actie === 'toevoegen'}
+                />
+                <button
+                  type="button"
+                  className="action-button"
+                  onClick={handleTypeToevoegen}
+                  disabled={!nieuwType.trim()}
+                >
+                  Toevoegen
+                </button>
+              </div>
+            </div>
+          )}
+
+          {actie === 'verwijderen' && (
+            <div className="form-group">
+              <label htmlFor="verwijder-type">Verwijder type:</label>
+              <div className="input-with-button">
+                <select
+                  id="verwijder-type"
+                  value={type}
+                  onChange={(e) => setType(e.target.value as ActiviteitType)}
+                  required
+                >
+                  {activiteitTypes
+                    .filter(t => !['Werk', 'Slaap', 'Sport', 'Hobby/Studie', 'Gezinstijd'].includes(t as string))
+                    .map((activiteitType) => (
+                      <option key={activiteitType} value={activiteitType}>
+                        {activiteitType}
+                      </option>
+                    ))}
+                </select>
+                <button
+                  type="button"
+                  className="action-button delete"
+                  onClick={handleTypeVerwijderen}
+                  disabled={['Werk', 'Slaap', 'Sport', 'Hobby/Studie', 'Gezinstijd'].includes(type as string)}
+                >
+                  Verwijderen
+                </button>
+              </div>
+              {['Werk', 'Slaap', 'Sport', 'Hobby/Studie', 'Gezinstijd'].includes(type as string) && (
+                <p className="error-message">Standaard types kunnen niet worden verwijderd</p>
+              )}
+            </div>
+          )}
+
+          {type === 'Sport' && actie === 'kies' && (
             <div className="form-group">
               <label htmlFor="sport-type">Sport Type:</label>
               <select
@@ -141,16 +237,36 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
             </div>
           )}
 
-          <div className="form-group checkbox-group">
-            <label>
-              <input
-                type="checkbox"
-                checked={maakPreset}
-                onChange={(e) => setMaakPreset(e.target.checked)}
-              />
-              Maak preset voor alle {geselecteerdeDienst || ''} diensten
-            </label>
-          </div>
+          {actie === 'kies' && (
+            <div className="form-group">
+              <label>Herhaal optie:</label>
+              <select
+                value={herhaalOptieType}
+                onChange={(e) => setHerhaalOptieType(e.target.value as HerhaalOptie['type'])}
+                className="herhaal-select"
+              >
+                <option value="Geen">Geen herhaling</option>
+                <option value="Dienst">Herhaal voor alle {geselecteerdeDienst} diensten</option>
+                <option value="Dag">Herhaal elke X dagen</option>
+                <option value="Week">Herhaal elke X weken</option>
+              </select>
+
+              {(herhaalOptieType === 'Dag' || herhaalOptieType === 'Week') && (
+                <div className="herhaal-waarde">
+                  <label>Herhaal elke:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="30"
+                    value={herhaalOptieWaarde}
+                    onChange={(e) => setHerhaalOptieWaarde(e.target.value)}
+                    required={herhaalOptieType === 'Dag' || herhaalOptieType === 'Week'}
+                  />
+                  <span>{herhaalOptieType === 'Dag' ? 'dagen' : 'weken'}</span>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="modal-buttons">
             <button type="button" className="cancel-button" onClick={annuleren}>

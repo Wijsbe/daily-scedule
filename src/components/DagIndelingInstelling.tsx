@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DienstSchema, DienstType, DagActiviteit, SportType, ActiviteitType } from '../types';
+import { DienstSchema, DienstType, DagActiviteit, SportType, ActiviteitType, HerhaalOptie } from '../types';
 import NieuweActiviteitModal from './NieuweActiviteitModal';
 import './DagIndelingInstelling.css';
 
@@ -29,24 +29,46 @@ const DagIndelingInstelling: React.FC<DagIndelingInstellingProps> = ({
     setToonNieuweActiviteitModal(true);
   };
 
-  const handleNieuweActiviteit = (nieuweActiviteit: DagActiviteit, maakPreset: boolean) => {
+  const handleNieuweActiviteit = (nieuweActiviteit: DagActiviteit, herhaalOptie: HerhaalOptie) => {
     // Voeg de activiteit toe aan de huidige dienst
     setActiviteiten([...activiteiten, nieuweActiviteit]);
 
-    // Als maakPreset is aangevinkt, voeg deze activiteit toe aan alle diensten van hetzelfde type
-    if (maakPreset) {
+    // Verwerk de herhaaloptie
+    if (herhaalOptie.type !== 'Geen') {
       // Maak een kopie van het huidige schema
       const nieuwSchema = { ...dienstSchema };
 
-      // Voeg de activiteit toe aan de dienst in het schema
-      if (!nieuwSchema[geselecteerdeDienst]) {
-        nieuwSchema[geselecteerdeDienst] = { activiteiten: [] };
-      }
+      // Verwerk op basis van het type herhaling
+      switch (herhaalOptie.type) {
+        case 'Dienst':
+          // Voeg de activiteit toe aan alle diensten van hetzelfde type
+          if (!nieuwSchema[geselecteerdeDienst]) {
+            nieuwSchema[geselecteerdeDienst] = { activiteiten: [] };
+          }
 
-      nieuwSchema[geselecteerdeDienst].activiteiten = [
-        ...nieuwSchema[geselecteerdeDienst].activiteiten,
-        nieuweActiviteit
-      ];
+          nieuwSchema[geselecteerdeDienst].activiteiten = [
+            ...nieuwSchema[geselecteerdeDienst].activiteiten,
+            nieuweActiviteit
+          ];
+          break;
+
+        case 'Dag':
+        case 'Week':
+          // Hier zou je logica kunnen toevoegen om de activiteit te herhalen op basis van dagen/weken
+          // Voor nu voegen we het alleen toe aan het huidige schema
+          if (!nieuwSchema[geselecteerdeDienst]) {
+            nieuwSchema[geselecteerdeDienst] = { activiteiten: [] };
+          }
+
+          nieuwSchema[geselecteerdeDienst].activiteiten = [
+            ...nieuwSchema[geselecteerdeDienst].activiteiten,
+            {
+              ...nieuweActiviteit,
+              herhaalOptie // Bewaar de herhaaloptie in de activiteit voor toekomstige verwerking
+            }
+          ];
+          break;
+      }
 
       // Update het schema
       setDienstSchema(nieuwSchema);

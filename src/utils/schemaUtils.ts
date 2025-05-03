@@ -1,4 +1,51 @@
-import { DienstSchema } from '../types';
+import { DienstSchema, ActiviteitType, StandaardActiviteitType } from '../types';
+
+// Standaard activiteitstypen
+export const standaardActiviteitTypes: StandaardActiviteitType[] = [
+  'Werk', 'Slaap', 'Sport', 'Hobby/Studie', 'Gezinstijd'
+];
+
+// Haal aangepaste activiteitstypen op uit localStorage
+export const getAangepastActiviteitTypes = (): string[] => {
+  const opgeslagen = localStorage.getItem('aangepastActiviteitTypes');
+  return opgeslagen ? JSON.parse(opgeslagen) : [];
+};
+
+// Sla aangepaste activiteitstypen op in localStorage
+export const saveAangepastActiviteitTypes = (types: string[]): void => {
+  localStorage.setItem('aangepastActiviteitTypes', JSON.stringify(types));
+};
+
+// Voeg een nieuw aangepast activiteitstype toe
+export const voegActiviteitTypeToe = (type: string): void => {
+  if (!type || type.trim() === '') return;
+
+  const aangepastTypes = getAangepastActiviteitTypes();
+
+  // Controleer of het type al bestaat
+  if (!aangepastTypes.includes(type) && !standaardActiviteitTypes.includes(type as StandaardActiviteitType)) {
+    aangepastTypes.push(type);
+    saveAangepastActiviteitTypes(aangepastTypes);
+  }
+};
+
+// Verwijder een aangepast activiteitstype
+export const verwijderActiviteitType = (type: string): void => {
+  if (!type || type.trim() === '') return;
+
+  const aangepastTypes = getAangepastActiviteitTypes();
+  const index = aangepastTypes.indexOf(type);
+
+  if (index !== -1) {
+    aangepastTypes.splice(index, 1);
+    saveAangepastActiviteitTypes(aangepastTypes);
+  }
+};
+
+// Haal alle activiteitstypen op (standaard + aangepast)
+export const getAlleActiviteitTypes = (): ActiviteitType[] => {
+  return [...standaardActiviteitTypes, ...getAangepastActiviteitTypes()];
+};
 
 export const getStandaardDagSchema = (): DienstSchema => {
   return {
