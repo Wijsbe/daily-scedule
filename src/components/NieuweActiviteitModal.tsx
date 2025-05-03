@@ -52,6 +52,13 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Controleer of we bezig zijn met het toevoegen van een nieuw type
+    if (actie === 'toevoegen' && nieuwType.trim() !== '') {
+      // Voeg eerst het nieuwe type toe
+      handleTypeToevoegen();
+      return; // Stop hier, we willen nog geen activiteit toevoegen
+    }
+
     // Maak de nieuwe activiteit
     const nieuweActiviteit: DagActiviteit = {
       startTijd,
@@ -127,7 +134,6 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
                 value={nieuwType}
                 onChange={(e) => setNieuwType(e.target.value)}
                 placeholder="Bijv. Meditatie, Koken, etc."
-                required={actie === 'toevoegen'}
               />
               <button
                 type="button"
