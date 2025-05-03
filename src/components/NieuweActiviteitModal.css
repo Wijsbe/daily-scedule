@@ -70,6 +70,32 @@
   font-size: 0.9rem;
 }
 
+.type-selector {
+  margin-bottom: var(--spacing-sm);
+}
+
+.type-radio-group {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+}
+
+.type-radio-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: normal;
+  cursor: pointer;
+}
+
 .form-group input,
 .form-group select {
   width: 100%;

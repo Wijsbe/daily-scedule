@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DienstSchema, DienstType, DagActiviteit, SportType } from '../types';
+import { DienstSchema, DienstType, DagActiviteit, SportType, ActiviteitType } from '../types';
 import NieuweActiviteitModal from './NieuweActiviteitModal';
 import './DagIndelingInstelling.css';
 
@@ -29,8 +29,29 @@ const DagIndelingInstelling: React.FC<DagIndelingInstellingProps> = ({
     setToonNieuweActiviteitModal(true);
   };
 
-  const handleNieuweActiviteit = (nieuweActiviteit: DagActiviteit) => {
+  const handleNieuweActiviteit = (nieuweActiviteit: DagActiviteit, maakPreset: boolean) => {
+    // Voeg de activiteit toe aan de huidige dienst
     setActiviteiten([...activiteiten, nieuweActiviteit]);
+
+    // Als maakPreset is aangevinkt, voeg deze activiteit toe aan alle diensten van hetzelfde type
+    if (maakPreset) {
+      // Maak een kopie van het huidige schema
+      const nieuwSchema = { ...dienstSchema };
+
+      // Voeg de activiteit toe aan de dienst in het schema
+      if (!nieuwSchema[geselecteerdeDienst]) {
+        nieuwSchema[geselecteerdeDienst] = { activiteiten: [] };
+      }
+
+      nieuwSchema[geselecteerdeDienst].activiteiten = [
+        ...nieuwSchema[geselecteerdeDienst].activiteiten,
+        nieuweActiviteit
+      ];
+
+      // Update het schema
+      setDienstSchema(nieuwSchema);
+    }
+
     setToonNieuweActiviteitModal(false);
   };
 
@@ -49,7 +70,7 @@ const DagIndelingInstelling: React.FC<DagIndelingInstellingProps> = ({
 
     if (veld === 'type') {
       // Controleer of de waarde een geldige activiteittype is
-      const activiteitType = waarde as 'Werk' | 'Slaap' | 'Sport' | 'Hobby/Studie' | 'Gezinstijd';
+      const activiteitType = waarde as ActiviteitType;
       nieuweActiviteiten[index] = {
         ...nieuweActiviteiten[index],
         type: activiteitType,
@@ -193,6 +214,7 @@ const DagIndelingInstelling: React.FC<DagIndelingInstellingProps> = ({
         <NieuweActiviteitModal
           toevoegen={handleNieuweActiviteit}
           annuleren={sluitNieuweActiviteitModal}
+          geselecteerdeDienst={geselecteerdeDienst}
         />
       )}
     </div>

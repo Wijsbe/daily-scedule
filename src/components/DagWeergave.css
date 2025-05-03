@@ -138,6 +138,22 @@
   margin-bottom: var(--spacing-xs);
 }
 
+.activiteit-info strong.custom-type {
+  color: #ff5722;
+  position: relative;
+  display: inline-block;
+}
+
+.activiteit-info strong.custom-type::after {
+  content: '(aangepast)';
+  font-size: 0.7rem;
+  font-weight: normal;
+  font-style: italic;
+  color: #888;
+  margin-left: var(--spacing-xs);
+  vertical-align: super;
+}
+
 .sport-type {
   margin-top: var(--spacing-xs);
   font-style: italic;

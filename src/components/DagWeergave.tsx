@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { DienstDag, DienstSchema, DienstType, SportType } from '../types';
+import { DienstDag, DienstSchema, DienstType, SportType, ActiviteitType } from '../types';
 import { getSportTypeVoorDatum } from '../utils/sportUtils';
 import SportDagSchema from './SportDagSchema';
 import './DagWeergave.css';
@@ -80,7 +80,9 @@ const DagWeergave: React.FC<DagWeergaveProps> = ({
                 {activiteit.startTijd} - {activiteit.eindTijd}
               </div>
               <div className="activiteit-info">
-                <strong>{activiteit.type}</strong>
+                <strong className={activiteit.isCustomType ? 'custom-type' : ''}>
+                  {activiteit.type}
+                </strong>
                 {activiteit.sportType && activiteit.type === 'Sport' && (
                   <span
                     className="sport-type clickable"
