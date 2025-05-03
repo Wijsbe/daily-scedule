@@ -122,6 +122,24 @@
   border-color: var(--primary-light);
 }
 
+.activiteit-item.highlight {
+  animation: highlight 2s ease-in-out;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.3);
+}
+
+@keyframes highlight {
+  0% {
+    background-color: rgba(63, 81, 181, 0.2);
+  }
+  70% {
+    background-color: rgba(63, 81, 181, 0.2);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+}
+
 .activiteit-tijden {
   display: flex;
   gap: var(--spacing-md);

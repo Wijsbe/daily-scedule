@@ -7,12 +7,18 @@ interface DagIndelingInstellingProps {
   dienstSchema: DienstSchema;
   setDienstSchema: React.Dispatch<React.SetStateAction<DienstSchema>>;
   sluiten: () => void;
+  teBewerkenActiviteit?: {
+    datum: Date;
+    activiteit: any;
+    index: number;
+  } | null;
 }
 
 const DagIndelingInstelling: React.FC<DagIndelingInstellingProps> = ({
   dienstSchema,
   setDienstSchema,
-  sluiten
+  sluiten,
+  teBewerkenActiviteit
 }) => {
   const [geselecteerdeDienst, setGeselecteerdeDienst] = useState<DienstType>('Ochtend');
   const [activiteiten, setActiviteiten] = useState<DagActiviteit[]>(
@@ -24,6 +30,55 @@ const DagIndelingInstelling: React.FC<DagIndelingInstellingProps> = ({
   React.useEffect(() => {
     setActiviteiten(dienstSchema[geselecteerdeDienst]?.activiteiten || []);
   }, [geselecteerdeDienst, dienstSchema]);
+
+  // Laad de te bewerken activiteit als deze is meegegeven
+  React.useEffect(() => {
+    if (teBewerkenActiviteit) {
+      // Bepaal de dienst van de te bewerken activiteit
+      const dienst = getDienstVoorDatum(teBewerkenActiviteit.datum);
+      setGeselecteerdeDienst(dienst);
+
+      // Scroll naar de te bewerken activiteit
+      setTimeout(() => {
+        const element = document.getElementById(`activiteit-${teBewerkenActiviteit.index}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('highlight');
+          setTimeout(() => {
+            element.classList.remove('highlight');
+          }, 2000);
+        }
+      }, 500);
+    }
+  }, [teBewerkenActiviteit]);
+
+  // Hulpfunctie om de dienst voor een datum te bepalen
+  const getDienstVoorDatum = (datum: Date): DienstType => {
+    // Hulpfunctie om te controleren of twee datums dezelfde dag zijn
+    const isSameDay = (date1: Date, date2: Date): boolean => {
+      return (
+        date1.getDate() === date2.getDate() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getFullYear() === date2.getFullYear()
+      );
+    };
+
+    // Zoek in de dienstSchema welke dienst overeenkomt met de activiteit
+    for (const [dienstType, schema] of Object.entries(dienstSchema)) {
+      const activiteitGevonden = schema.activiteiten.some(act =>
+        act.startTijd === teBewerkenActiviteit?.activiteit.startTijd &&
+        act.eindTijd === teBewerkenActiviteit?.activiteit.eindTijd &&
+        act.type === teBewerkenActiviteit?.activiteit.type
+      );
+
+      if (activiteitGevonden) {
+        return dienstType as DienstType;
+      }
+    }
+
+    // Fallback naar de huidige geselecteerde dienst
+    return geselecteerdeDienst;
+  };
 
   const voegActiviteitToe = () => {
     setToonNieuweActiviteitModal(true);
@@ -140,7 +195,7 @@ const DagIndelingInstelling: React.FC<DagIndelingInstellingProps> = ({
             <p className="geen-activiteiten">Geen activiteiten ingesteld</p>
           ) : (
             activiteiten.map((activiteit, index) => (
-              <div key={index} className="activiteit-item">
+              <div key={index} id={`activiteit-${index}`} className={`activiteit-item ${teBewerkenActiviteit?.index === index ? 'highlight' : ''}`}>
                 <div className="activiteit-tijden">
                   <div className="tijd-veld">
                     <label htmlFor={`start-tijd-${index}`}>Start:</label>

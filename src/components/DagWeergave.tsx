@@ -10,12 +10,14 @@ interface DagWeergaveProps {
   datum: Date;
   dienstDagen: DienstDag[];
   dienstSchema: DienstSchema;
+  bewerkenActiviteit?: (datum: Date, activiteit: any, index: number) => void;
 }
 
 const DagWeergave: React.FC<DagWeergaveProps> = ({
   datum,
   dienstDagen,
-  dienstSchema
+  dienstSchema,
+  bewerkenActiviteit
 }) => {
   const [geselecteerdeSport, setGeselecteerdeSport] = useState<SportType | null>(null);
 
@@ -92,6 +94,15 @@ const DagWeergave: React.FC<DagWeergaveProps> = ({
                   </span>
                 )}
               </div>
+              {bewerkenActiviteit && (
+                <button
+                  className="bewerk-activiteit-knop"
+                  onClick={() => bewerkenActiviteit(datum, activiteit, index)}
+                  title="Bewerk deze activiteit"
+                >
+                  <span role="img" aria-label="Bewerken">✏️</span>
+                </button>
+              )}
             </div>
           ))
         ) : (

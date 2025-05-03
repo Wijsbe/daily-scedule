@@ -41,6 +41,7 @@ function App() {
 
   const [toonPatroonInstelling, setToonPatroonInstelling] = useState(false);
   const [toonDagIndelingInstelling, setToonDagIndelingInstelling] = useState(false);
+  const [teBewerkenActiviteit, setTeBewerkenActiviteit] = useState<{datum: Date, activiteit: any, index: number} | null>(null);
 
   // Update de app titel wanneer de preset verandert
   useEffect(() => {
@@ -109,6 +110,12 @@ function App() {
     });
   };
 
+  // Functie om een activiteit te bewerken
+  const bewerkenActiviteit = (datum: Date, activiteit: any, index: number) => {
+    setTeBewerkenActiviteit({ datum, activiteit, index });
+    setToonDagIndelingInstelling(true);
+  };
+
   return (
     <div className="app">
       <header>
@@ -139,6 +146,7 @@ function App() {
             datum={geselecteerdeDatum}
             dienstDagen={dienstDagen}
             dienstSchema={dienstSchema}
+            bewerkenActiviteit={bewerkenActiviteit}
           />
         )}
       </main>
@@ -155,7 +163,11 @@ function App() {
         <DagIndelingInstelling
           dienstSchema={dienstSchema}
           setDienstSchema={setDienstSchema}
-          sluiten={() => setToonDagIndelingInstelling(false)}
+          sluiten={() => {
+            setToonDagIndelingInstelling(false);
+            setTeBewerkenActiviteit(null);
+          }}
+          teBewerkenActiviteit={teBewerkenActiviteit}
         />
       )}
     </div>
