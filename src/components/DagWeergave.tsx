@@ -20,12 +20,19 @@ const DagWeergave: React.FC<DagWeergaveProps> = ({
   const [geselecteerdeSport, setGeselecteerdeSport] = useState<SportType | null>(null);
 
   const getDienstVoorDatum = (datum: Date): DienstType => {
-    const gevondenDag = dienstDagen.find(dag =>
-      dag.datum.getDate() === datum.getDate() &&
-      dag.datum.getMonth() === datum.getMonth() &&
-      dag.datum.getFullYear() === datum.getFullYear()
-    );
+    // Hulpfunctie om te controleren of twee datums dezelfde dag zijn
+    const isSameDay = (date1: Date, date2: Date): boolean => {
+      return (
+        date1.getDate() === date2.getDate() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getFullYear() === date2.getFullYear()
+      );
+    };
 
+    // Zoek de dienst voor de gegeven datum
+    const gevondenDag = dienstDagen.find(dag => isSameDay(dag.datum, datum));
+
+    // Geef de dienst terug als deze is gevonden, anders 'Vrij' als standaard
     return gevondenDag ? gevondenDag.dienst : 'Vrij';
   };
 

@@ -8,6 +8,14 @@ import { DienstDag, DienstType, DienstSchema } from './types';
 import { getStandaardDagSchema } from './utils/schemaUtils';
 import { requestNotificationPermission } from './utils/notificaties';
 
+// Titels voor verschillende ploegenroosters
+const ploegenTitels: Record<string, string> = {
+  'tweeploegen': '2-Ploegenrooster',
+  'drieploegen': '3-Ploegenrooster',
+  'vijfploegen': '5-Ploegenrooster',
+  'default': 'Ploegenrooster'
+};
+
 function App() {
   const [geselecteerdeDatum, setGeselecteerdeDatum] = useState<Date | null>(new Date());
   const [dienstDagen, setDienstDagen] = useState<DienstDag[]>(() => {
@@ -17,14 +25,39 @@ function App() {
       return value;
     }) : [];
   });
-  
+
   const [dienstSchema, setDienstSchema] = useState<DienstSchema>(() => {
     const opgeslagen = localStorage.getItem('dienstSchema');
     return opgeslagen ? JSON.parse(opgeslagen) : getStandaardDagSchema();
   });
-  
+
+  // Haal de geselecteerde preset op uit localStorage
+  const [appTitel, setAppTitel] = useState<string>(() => {
+    const preset = localStorage.getItem('geselecteerdePreset');
+    return ploegenTitels[preset || 'default'];
+  });
+
   const [toonPatroonInstelling, setToonPatroonInstelling] = useState(false);
   const [toonDagIndelingInstelling, setToonDagIndelingInstelling] = useState(false);
+
+  // Update de app titel wanneer de preset verandert
+  useEffect(() => {
+    const handlePresetChange = () => {
+      const preset = localStorage.getItem('geselecteerdePreset');
+      setAppTitel(ploegenTitels[preset || 'default']);
+    };
+
+    // Luister naar veranderingen in localStorage
+    window.addEventListener('storage', handlePresetChange);
+
+    // Controleer regelmatig op veranderingen (als fallback)
+    const interval = setInterval(handlePresetChange, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handlePresetChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('dienstDagen', JSON.stringify(dienstDagen));
@@ -34,24 +67,34 @@ function App() {
     localStorage.setItem('dienstSchema', JSON.stringify(dienstSchema));
   }, [dienstSchema]);
 
+  // Hulpfunctie om te controleren of twee datums dezelfde dag zijn
+  const isSameDay = (date1: Date, date2: Date): boolean => {
+    return (
+      date1.getDate() === date2.getDate() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getFullYear() === date2.getFullYear()
+    );
+  };
+
   const updateDienst = (datum: Date, dienst: DienstType) => {
     setDienstDagen(prev => {
-      const bestaandeDag = prev.find(dag => 
-        dag.datum.getDate() === datum.getDate() && 
-        dag.datum.getMonth() === datum.getMonth() && 
-        dag.datum.getFullYear() === datum.getFullYear()
-      );
-      
+      // Zoek of er al een dag bestaat voor deze datum
+      const bestaandeDag = prev.find(dag => isSameDay(dag.datum, datum));
+
       if (bestaandeDag) {
-        return prev.map(dag => 
-          dag.datum.getDate() === datum.getDate() && 
-          dag.datum.getMonth() === datum.getMonth() && 
-          dag.datum.getFullYear() === datum.getFullYear()
+        // Update de bestaande dag
+        return prev.map(dag =>
+          isSameDay(dag.datum, datum)
             ? { ...dag, dienst, isHandmatigAangepast: true }
             : dag
         );
       } else {
-        return [...prev, { datum, dienst, isHandmatigAangepast: true }];
+        // Voeg een nieuwe dag toe
+        return [...prev, {
+          datum: new Date(datum), // Maak een nieuwe Date instantie om referentieproblemen te voorkomen
+          dienst,
+          isHandmatigAangepast: true
+        }];
       }
     });
   };
@@ -59,7 +102,7 @@ function App() {
   return (
     <div className="app">
       <header>
-        <h1>5-Ploegenrooster</h1>
+        <h1>{appTitel}</h1>
         <div className="header-buttons">
           <button onClick={() => setToonPatroonInstelling(true)}>
             Patroon Instellen
@@ -74,15 +117,15 @@ function App() {
       </header>
 
       <main>
-        <Kalender 
-          dienstDagen={dienstDagen} 
+        <Kalender
+          dienstDagen={dienstDagen}
           updateDienst={updateDienst}
           geselecteerdeDatum={geselecteerdeDatum}
           setGeselecteerdeDatum={setGeselecteerdeDatum}
         />
-        
+
         {geselecteerdeDatum && (
-          <DagWeergave 
+          <DagWeergave
             datum={geselecteerdeDatum}
             dienstDagen={dienstDagen}
             dienstSchema={dienstSchema}
@@ -91,7 +134,7 @@ function App() {
       </main>
 
       {toonPatroonInstelling && (
-        <PatroonInstelling 
+        <PatroonInstelling
           dienstDagen={dienstDagen}
           setDienstDagen={setDienstDagen}
           sluiten={() => setToonPatroonInstelling(false)}
@@ -99,7 +142,7 @@ function App() {
       )}
 
       {toonDagIndelingInstelling && (
-        <DagIndelingInstelling 
+        <DagIndelingInstelling
           dienstSchema={dienstSchema}
           setDienstSchema={setDienstSchema}
           sluiten={() => setToonDagIndelingInstelling(false)}

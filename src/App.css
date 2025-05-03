@@ -1,17 +1,37 @@
 :root {
-  --primary-color: #3f51b5;
-  --primary-light: #757de8;
-  --primary-dark: #002984;
-  --secondary-color: #ff4081;
-  --secondary-light: #ff79b0;
-  --secondary-dark: #c60055;
+  /* New color palette */
+  --atomic-tangerine: #FFAF87;
+  --salmon: #FF8E72;
+  --bittersweet: #ED6A5E;
+  --aquamarine: #4CE0B3;
+  --myrtle-green: #377771;
+
+  /* Functional colors */
+  --primary-color: var(--myrtle-green);
+  --primary-light: var(--aquamarine);
+  --primary-dark: #2a5a55;
+  --secondary-color: var(--bittersweet);
+  --secondary-light: var(--salmon);
+  --secondary-dark: #c85a50;
+  --accent-color: var(--atomic-tangerine);
+
+  /* Text colors */
   --text-on-primary: #ffffff;
   --text-on-secondary: #ffffff;
-  --background-color: #f5f7fa;
+  --text-color: #333333;
+  --text-color-light: #666666;
+
+  /* UI colors */
+  --background-color: #f8f8f8;
   --card-color: #ffffff;
-  --border-radius: 12px;
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  --transition: all 0.3s ease;
+
+  /* Layout */
+  --border-radius: 16px;
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -34,29 +54,45 @@ header {
   align-items: center;
   margin-bottom: var(--spacing-xl);
   padding: var(--spacing-lg);
-  background-color: var(--card-color);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   position: sticky;
   top: var(--spacing-md);
   z-index: 10;
+  overflow: hidden;
+  position: relative;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 header h1 {
   margin: 0;
-  color: var(--primary-color);
-  font-weight: 600;
+  color: var(--text-on-primary);
+  font-weight: 700;
   font-size: 1.8rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .header-buttons {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
 }
 
 .header-buttons button {
   padding: var(--spacing-sm) var(--spacing-lg);
-  background-color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.15);
   color: var(--text-on-primary);
   border: none;
   border-radius: var(--border-radius);
@@ -66,13 +102,31 @@ header h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(5px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.header-buttons button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
 }
 
 .header-buttons button:hover {
-  background-color: var(--primary-light);
+  background-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.header-buttons button:hover::before {
+  left: 100%;
 }
 
 .header-buttons button:active {
@@ -84,6 +138,51 @@ main {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-xl);
+}
+
+.card {
+  background-color: var(--card-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: var(--spacing-lg);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+}
+
+.card h2 {
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+  position: relative;
+}
+
+.card h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+  border-radius: 3px;
+}
+
+/* Accent elements */
+.accent-bg {
+  background-color: var(--accent-color);
+  color: var(--text-color);
+}
+
+.secondary-bg {
+  background-color: var(--secondary-color);
+  color: var(--text-on-secondary);
 }
 
 /* Responsive styles */
@@ -132,5 +231,9 @@ main {
   header {
     top: var(--spacing-sm);
     margin-bottom: var(--spacing-lg);
+  }
+
+  .card {
+    padding: var(--spacing-md);
   }
 }

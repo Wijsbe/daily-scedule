@@ -7,7 +7,7 @@ import './Kalender.css';
 
 interface KalenderProps {
   dienstDagen: DienstDag[];
-  updateDienst: (datum: Date, dienst: DienstType) => void;
+  updateDienst: (datum: Date, dienst: DienstType) => void; // Behouden voor mogelijke toekomstige functionaliteit
   geselecteerdeDatum: Date | null;
   setGeselecteerdeDatum: (datum: Date) => void;
 }
@@ -28,39 +28,30 @@ const dienstAfkortingen: Record<DienstType, string> = {
 
 const Kalender: React.FC<KalenderProps> = ({
   dienstDagen,
-  updateDienst,
+  updateDienst, // Niet gebruikt, maar behouden voor toekomstige functionaliteit
   geselecteerdeDatum,
   setGeselecteerdeDatum
 }) => {
   const getDienstVoorDatum = (datum: Date): DienstType | null => {
-    const gevondenDag = dienstDagen.find(dag =>
-      dag.datum.getDate() === datum.getDate() &&
-      dag.datum.getMonth() === datum.getMonth() &&
-      dag.datum.getFullYear() === datum.getFullYear()
-    );
+    // Hulpfunctie om te controleren of twee datums dezelfde dag zijn
+    const isSameDay = (date1: Date, date2: Date): boolean => {
+      return (
+        date1.getDate() === date2.getDate() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getFullYear() === date2.getFullYear()
+      );
+    };
 
+    // Zoek de dienst voor de gegeven datum
+    const gevondenDag = dienstDagen.find(dag => isSameDay(dag.datum, datum));
+
+    // Geef de dienst terug als deze is gevonden, anders null
     return gevondenDag ? gevondenDag.dienst : null;
   };
 
   const handleDagKlik = (datum: Date) => {
+    // Alleen de geselecteerde datum bijwerken, geen dienst wijzigen
     setGeselecteerdeDatum(datum);
-
-    // Toggle door diensten bij klik
-    const huidigeDienst = getDienstVoorDatum(datum);
-
-    let volgendeDienst: DienstType = 'Ochtend';
-
-    if (huidigeDienst === 'Ochtend') {
-      volgendeDienst = 'Middag';
-    } else if (huidigeDienst === 'Middag') {
-      volgendeDienst = 'Nacht';
-    } else if (huidigeDienst === 'Nacht') {
-      volgendeDienst = 'Vrij';
-    } else if (huidigeDienst === 'Vrij') {
-      volgendeDienst = 'Ochtend';
-    }
-
-    updateDienst(datum, volgendeDienst);
   };
 
   const tileContent = ({ date, view }: { date: Date, view: string }) => {

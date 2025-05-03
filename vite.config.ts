@@ -13,7 +13,8 @@ export default defineConfig({
         name: '5-Ploegenrooster',
         short_name: 'Ploegenrooster',
         description: 'PWA voor 5-ploegenrooster met dagplanning en sportschema',
-        theme_color: '#ffffff',
+        theme_color: '#377771',
+        background_color: '#f8f8f8',
         icons: [
           {
             src: 'pwa-192x192.png',
