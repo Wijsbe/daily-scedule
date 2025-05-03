@@ -213,9 +213,9 @@ const PatroonInstelling: React.FC<PatroonInstellingProps> = ({
     sluiten();
   };
 
-  // Formatteer datum voor weergave
+  // Formatteer datum voor weergave met dag van de week
   const formateerDatum = (datum: Date): string => {
-    return format(datum, 'dd-MM-yyyy', { locale: nl });
+    return format(datum, 'EEE dd-MM-yyyy', { locale: nl });
   };
 
   return (

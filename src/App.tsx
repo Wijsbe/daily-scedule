@@ -7,6 +7,8 @@ import DagIndelingInstelling from './components/DagIndelingInstelling';
 import { DienstDag, DienstType, DienstSchema } from './types';
 import { getStandaardDagSchema } from './utils/schemaUtils';
 import { requestNotificationPermission } from './utils/notificaties';
+import { format } from 'date-fns';
+import { nl } from 'date-fns/locale';
 
 // Titels voor verschillende ploegenroosters
 const ploegenTitels: Record<string, string> = {
@@ -75,6 +77,14 @@ function App() {
       date1.getFullYear() === date2.getFullYear()
     );
   };
+
+  // Formatteer datum voor weergave met dag van de week
+  const formateerDatum = (datum: Date): string => {
+    return format(datum, 'EEE dd-MM-yyyy', { locale: nl });
+  };
+
+  // Exporteer de formateerDatum functie voor gebruik in andere componenten
+  (window as any).formateerDatum = formateerDatum;
 
   const updateDienst = (datum: Date, dienst: DienstType) => {
     setDienstDagen(prev => {
