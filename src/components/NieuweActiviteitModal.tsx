@@ -99,28 +99,22 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
           </div>
 
           <div className="form-group">
-            <div className="type-selector">
-              <label>Type Activiteit:</label>
-              <div className="type-radio-group">
-                <label>
-                  <input
-                    type="radio"
-                    name="type-selector"
-                    checked={actie === 'toevoegen'}
-                    onChange={() => setActie('toevoegen')}
-                  />
-                  Type toevoegen
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="type-selector"
-                    checked={actie === 'verwijderen'}
-                    onChange={() => setActie('verwijderen')}
-                  />
-                  Type verwijderen
-                </label>
-              </div>
+            <label>Type Activiteit:</label>
+            <div className="action-buttons-container">
+              <button
+                type="button"
+                className={`action-button add-button ${actie === 'toevoegen' ? 'active' : ''}`}
+                onClick={() => setActie('toevoegen')}
+              >
+                Type toevoegen
+              </button>
+              <button
+                type="button"
+                className={`action-button delete-button ${actie === 'verwijderen' ? 'active' : ''}`}
+                onClick={() => setActie('verwijderen')}
+              >
+                Type verwijderen
+              </button>
             </div>
           </div>
 
