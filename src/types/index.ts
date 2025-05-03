@@ -6,8 +6,7 @@ export type StandaardActiviteitType = 'Werk' | 'Slaap' | 'Sport' | 'Hobby/Studie
 export type ActiviteitType = StandaardActiviteitType | string;
 
 export interface HerhaalOptie {
-  type: 'Dienst' | 'Dag' | 'Week' | 'Geen';
-  waarde?: string; // Bijvoorbeeld 'Ochtend' voor type 'Dienst', of '2' voor type 'Week'
+  type: 'Ochtend' | 'Middag' | 'Nacht' | 'Geen';
 }
 
 export interface DagActiviteit {

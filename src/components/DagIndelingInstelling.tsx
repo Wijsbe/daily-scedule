@@ -38,37 +38,20 @@ const DagIndelingInstelling: React.FC<DagIndelingInstellingProps> = ({
       // Maak een kopie van het huidige schema
       const nieuwSchema = { ...dienstSchema };
 
-      // Verwerk op basis van het type herhaling
-      switch (herhaalOptie.type) {
-        case 'Dienst':
-          // Voeg de activiteit toe aan alle diensten van hetzelfde type
-          if (!nieuwSchema[geselecteerdeDienst]) {
-            nieuwSchema[geselecteerdeDienst] = { activiteiten: [] };
-          }
+      // Voeg de activiteit toe aan alle diensten van het gespecificeerde type
+      const dienstType = herhaalOptie.type; // 'Ochtend', 'Middag', of 'Nacht'
 
-          nieuwSchema[geselecteerdeDienst].activiteiten = [
-            ...nieuwSchema[geselecteerdeDienst].activiteiten,
-            nieuweActiviteit
-          ];
-          break;
-
-        case 'Dag':
-        case 'Week':
-          // Hier zou je logica kunnen toevoegen om de activiteit te herhalen op basis van dagen/weken
-          // Voor nu voegen we het alleen toe aan het huidige schema
-          if (!nieuwSchema[geselecteerdeDienst]) {
-            nieuwSchema[geselecteerdeDienst] = { activiteiten: [] };
-          }
-
-          nieuwSchema[geselecteerdeDienst].activiteiten = [
-            ...nieuwSchema[geselecteerdeDienst].activiteiten,
-            {
-              ...nieuweActiviteit,
-              herhaalOptie // Bewaar de herhaaloptie in de activiteit voor toekomstige verwerking
-            }
-          ];
-          break;
+      if (!nieuwSchema[dienstType]) {
+        nieuwSchema[dienstType] = { activiteiten: [] };
       }
+
+      nieuwSchema[dienstType].activiteiten = [
+        ...nieuwSchema[dienstType].activiteiten,
+        {
+          ...nieuweActiviteit,
+          herhaalOptie // Bewaar de herhaaloptie in de activiteit voor toekomstige verwerking
+        }
+      ];
 
       // Update het schema
       setDienstSchema(nieuwSchema);

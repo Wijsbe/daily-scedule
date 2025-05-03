@@ -20,9 +20,8 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
   const [sportType, setSportType] = useState<SportType>('Push');
   const [nieuwType, setNieuwType] = useState<string>('');
   const [activiteitTypes, setActiviteitTypes] = useState<ActiviteitType[]>([]);
-  const [actie, setActie] = useState<'kies' | 'toevoegen' | 'verwijderen'>('kies');
+  const [actie, setActie] = useState<'toevoegen' | 'verwijderen'>('toevoegen');
   const [herhaalOptieType, setHerhaalOptieType] = useState<HerhaalOptie['type']>('Geen');
-  const [herhaalOptieWaarde, setHerhaalOptieWaarde] = useState<string>('');
 
   // Laad alle activiteitstypen bij het openen van de modal
   useEffect(() => {
@@ -35,7 +34,7 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
       voegActiviteitTypeToe(nieuwType);
       setActiviteitTypes(getAlleActiviteitTypes());
       setNieuwType('');
-      setActie('kies');
+      setActie('toevoegen');
       setType(nieuwType); // Selecteer het nieuwe type automatisch
     }
   };
@@ -46,21 +45,12 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
       verwijderActiviteitType(type as string);
       setActiviteitTypes(getAlleActiviteitTypes());
       setType('Werk'); // Reset naar een standaard type
-      setActie('kies');
+      setActie('toevoegen');
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Als we bezig zijn met toevoegen of verwijderen van een type, doe dat eerst
-    if (actie === 'toevoegen') {
-      handleTypeToevoegen();
-      return;
-    } else if (actie === 'verwijderen') {
-      handleTypeVerwijderen();
-      return;
-    }
 
     // Maak de nieuwe activiteit
     const nieuweActiviteit: DagActiviteit = {
@@ -72,8 +62,7 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
 
     // Maak de herhaaloptie
     const herhaalOptie: HerhaalOptie = {
-      type: herhaalOptieType,
-      waarde: herhaalOptieWaarde
+      type: herhaalOptieType
     };
 
     toevoegen(nieuweActiviteit, herhaalOptie);
@@ -117,15 +106,6 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
                   <input
                     type="radio"
                     name="type-selector"
-                    checked={actie === 'kies'}
-                    onChange={() => setActie('kies')}
-                  />
-                  Kies type
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="type-selector"
                     checked={actie === 'toevoegen'}
                     onChange={() => setActie('toevoegen')}
                   />
@@ -144,82 +124,74 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
             </div>
           </div>
 
-          {actie === 'kies' && (
+          {actie === 'toevoegen' ? (
             <div className="form-group">
-              <label htmlFor="activiteit-type">Kies type:</label>
+              <label htmlFor="nieuw-type">Nieuw type:</label>
+              <input
+                type="text"
+                id="nieuw-type"
+                value={nieuwType}
+                onChange={(e) => setNieuwType(e.target.value)}
+                placeholder="Bijv. Meditatie, Koken, etc."
+                required={actie === 'toevoegen'}
+              />
+              <button
+                type="button"
+                className="action-button add-button"
+                onClick={handleTypeToevoegen}
+                disabled={!nieuwType.trim()}
+              >
+                Type Toevoegen
+              </button>
+            </div>
+          ) : (
+            <div className="form-group">
+              <label htmlFor="verwijder-type">Verwijder type:</label>
               <select
-                id="activiteit-type"
+                id="verwijder-type"
                 value={type}
                 onChange={(e) => setType(e.target.value as ActiviteitType)}
                 required
               >
-                {activiteitTypes.map((activiteitType) => (
-                  <option key={activiteitType} value={activiteitType}>
-                    {activiteitType}
-                  </option>
-                ))}
+                {activiteitTypes
+                  .filter(t => !['Werk', 'Slaap', 'Sport', 'Hobby/Studie', 'Gezinstijd'].includes(t as string))
+                  .map((activiteitType) => (
+                    <option key={activiteitType} value={activiteitType}>
+                      {activiteitType}
+                    </option>
+                  ))}
               </select>
-            </div>
-          )}
-
-          {actie === 'toevoegen' && (
-            <div className="form-group">
-              <label htmlFor="nieuw-type">Nieuw type:</label>
-              <div className="input-with-button">
-                <input
-                  type="text"
-                  id="nieuw-type"
-                  value={nieuwType}
-                  onChange={(e) => setNieuwType(e.target.value)}
-                  placeholder="Bijv. Meditatie, Koken, etc."
-                  required={actie === 'toevoegen'}
-                />
-                <button
-                  type="button"
-                  className="action-button"
-                  onClick={handleTypeToevoegen}
-                  disabled={!nieuwType.trim()}
-                >
-                  Toevoegen
-                </button>
-              </div>
-            </div>
-          )}
-
-          {actie === 'verwijderen' && (
-            <div className="form-group">
-              <label htmlFor="verwijder-type">Verwijder type:</label>
-              <div className="input-with-button">
-                <select
-                  id="verwijder-type"
-                  value={type}
-                  onChange={(e) => setType(e.target.value as ActiviteitType)}
-                  required
-                >
-                  {activiteitTypes
-                    .filter(t => !['Werk', 'Slaap', 'Sport', 'Hobby/Studie', 'Gezinstijd'].includes(t as string))
-                    .map((activiteitType) => (
-                      <option key={activiteitType} value={activiteitType}>
-                        {activiteitType}
-                      </option>
-                    ))}
-                </select>
-                <button
-                  type="button"
-                  className="action-button delete"
-                  onClick={handleTypeVerwijderen}
-                  disabled={['Werk', 'Slaap', 'Sport', 'Hobby/Studie', 'Gezinstijd'].includes(type as string)}
-                >
-                  Verwijderen
-                </button>
-              </div>
+              <button
+                type="button"
+                className="action-button delete-button"
+                onClick={handleTypeVerwijderen}
+                disabled={['Werk', 'Slaap', 'Sport', 'Hobby/Studie', 'Gezinstijd'].includes(type as string)}
+              >
+                Type Verwijderen
+              </button>
               {['Werk', 'Slaap', 'Sport', 'Hobby/Studie', 'Gezinstijd'].includes(type as string) && (
                 <p className="error-message">Standaard types kunnen niet worden verwijderd</p>
               )}
             </div>
           )}
 
-          {type === 'Sport' && actie === 'kies' && (
+          <div className="form-group">
+            <label htmlFor="activiteit-type">Kies type:</label>
+            <select
+              id="activiteit-type"
+              value={type}
+              onChange={(e) => setType(e.target.value as ActiviteitType)}
+              required
+            >
+              {activiteitTypes.map((activiteitType) => (
+                <option key={activiteitType} value={activiteitType}>
+                  {activiteitType}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {type === 'Sport' && (
             <div className="form-group">
               <label htmlFor="sport-type">Sport Type:</label>
               <select
@@ -237,36 +209,19 @@ const NieuweActiviteitModal: React.FC<NieuweActiviteitModalProps> = ({
             </div>
           )}
 
-          {actie === 'kies' && (
-            <div className="form-group">
-              <label>Herhaal optie:</label>
-              <select
-                value={herhaalOptieType}
-                onChange={(e) => setHerhaalOptieType(e.target.value as HerhaalOptie['type'])}
-                className="herhaal-select"
-              >
-                <option value="Geen">Geen herhaling</option>
-                <option value="Dienst">Herhaal voor alle {geselecteerdeDienst} diensten</option>
-                <option value="Dag">Herhaal elke X dagen</option>
-                <option value="Week">Herhaal elke X weken</option>
-              </select>
-
-              {(herhaalOptieType === 'Dag' || herhaalOptieType === 'Week') && (
-                <div className="herhaal-waarde">
-                  <label>Herhaal elke:</label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="30"
-                    value={herhaalOptieWaarde}
-                    onChange={(e) => setHerhaalOptieWaarde(e.target.value)}
-                    required={herhaalOptieType === 'Dag' || herhaalOptieType === 'Week'}
-                  />
-                  <span>{herhaalOptieType === 'Dag' ? 'dagen' : 'weken'}</span>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="form-group">
+            <label>Herhaal optie:</label>
+            <select
+              value={herhaalOptieType}
+              onChange={(e) => setHerhaalOptieType(e.target.value as HerhaalOptie['type'])}
+              className="herhaal-select"
+            >
+              <option value="Geen">Geen herhaling</option>
+              <option value="Ochtend">Herhaal voor alle Ochtend diensten</option>
+              <option value="Middag">Herhaal voor alle Middag diensten</option>
+              <option value="Nacht">Herhaal voor alle Nacht diensten</option>
+            </select>
+          </div>
 
           <div className="modal-buttons">
             <button type="button" className="cancel-button" onClick={annuleren}>
